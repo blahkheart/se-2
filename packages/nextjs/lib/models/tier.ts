@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface TierDocument extends mongoose.Document {
+  id: string;
   name: string;
   lockAddress: string;
   description: string;
@@ -15,6 +16,10 @@ export interface TierDocument extends mongoose.Document {
 
 const tierSchema = new mongoose.Schema<TierDocument>(
   {
+    id: {
+      type: String,
+      required: true,
+    },
     name: { type: String, required: true },
     lockAddress: { type: String, required: true },
     description: { type: String },

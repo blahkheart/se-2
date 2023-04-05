@@ -23,8 +23,8 @@ export async function getUsers() {
     if (!db) await init();
     const _data = await User.find({}).limit(20);
     const result = _data.map((user: UserDocument) => ({ ...user.toObject(), id: user._id.toString() }));
-    return { data: result };
+    return { users: result };
   } catch (error) {
-    return { error: "Failed to fetch data" };
+    return { error: "Failed to fetch users" };
   }
 }

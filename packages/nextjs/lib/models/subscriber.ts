@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface SubscriptionDocument extends mongoose.Document {
+export interface SubscriberDocument extends mongoose.Document {
   user: mongoose.Schema.Types.ObjectId;
   membership: mongoose.Schema.Types.ObjectId;
   startDate: Date;
@@ -8,7 +8,7 @@ export interface SubscriptionDocument extends mongoose.Document {
   isActive: boolean;
 }
 
-const subscriptionSchema = new mongoose.Schema<SubscriptionDocument>(
+const subscriberSchema = new mongoose.Schema<SubscriberDocument>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "auth-api.User", required: true },
     membership: {
@@ -25,5 +25,5 @@ const subscriptionSchema = new mongoose.Schema<SubscriptionDocument>(
   },
 );
 
-const Subscriber = mongoose.models.Subscribers || mongoose.model("Subscribers", subscriptionSchema);
+const Subscriber = mongoose.models.Subscribers || mongoose.model("Subscribers", subscriberSchema);
 export default Subscriber;

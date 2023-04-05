@@ -27,6 +27,6 @@ const integrationSchema = new mongoose.Schema<IntegrationDocument>({
   },
 });
 
-const Integration = mongoose.model("Integrations", integrationSchema);
+const Integration = mongoose.models.Integrations || mongoose.model("Integrations", integrationSchema);
 
 export default Integration;
