@@ -1,37 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// import { useRouter } from "next/router";
 import { InputBase } from "../scaffold-eth";
+import { IntegrationDocument } from "@lib/models/";
+// import User from "@lib/models/user";
+import axios from "axios";
+import { useAccount } from "wagmi";
+// import dbConnect from "~~/lib/dbConnect";
+import handleUser from "~~/services/web3/handleUser";
 
-// import { TierDocument } from "@lib/models/tier";
-// import axios from "axios";
-
-// interface Props {
-//   address: string;
-// }
+interface User {
+  _id: string;
+  address: string;
+}
 
 export const CreateIntegration: React.FC = () => {
   const [name, setName] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [description, setDescription] = useState("");
+  const [user, setIsUser] = useState<User>();
 
+  // const router = useRouter();
+  const { address, isConnected } = useAccount();
+  useEffect(() => {
+    if (isConnected && address) {
+      handleUser(address)
+        .then(_user => {
+          // Use the _user document however you like
+          console.log(`User ${_user._id} has address ${_user.address}`);
+          if (_user) setIsUser(_user);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [address, isConnected]);
   const handleSubmit = async () => {
     try {
-      // get user id from db using their address
-      // create tier in DB
-      //   const response = await axios.post<TierDocument>("/api/tiers", {
-      //     name,
-      //     description,
-      //     apiKey,
-      //     createdBy,
-      //   });
-      //   if (response.status === 201) {
-      //     setName("");
-      //   }
+      console.log("user", user);
+      // create integration in DB
+      if (!user) return;
+      const response = await axios.post<IntegrationDocument>("/api/integration", {
+        name,
+        description,
+        apiKey,
+        createdBy: user._id.toString(),
+      });
+      if (response.status === 201) {
+        console.log("values-response", response);
+        // router.push("/user");
+      }
       const data = {
         name,
         description,
         apiKey,
       };
       console.log("values", data);
+      // }
     } catch (error) {
       console.error(error);
     }
@@ -39,7 +63,7 @@ export const CreateIntegration: React.FC = () => {
 
   return (
     <div className="flex items-center flex-col flex-grow pt-10 mb-6">
-      <div className="flex flex-col mt-6 px-7 py-8 bg-base-200 opacity-80 rounded-2xl shadow-lg border-2 border-primary">
+      <div className="flex flex-col my-6 px-7 py-8 bg-base-200 opacity-80 rounded-2xl shadow-lg border-2 border-primary">
         <span className="text-2xl sm:text-3xl mb-4 text-center text-black">New Integration</span>
         <div className="my-4">
           <InputBase error={!name} placeholder="Name" value={name} onChange={setName} />

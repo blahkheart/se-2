@@ -1,6 +1,6 @@
 import dbConnect from "@lib/dbConnect";
 import Integration from "@lib/models/integration";
-import User from "@lib/models/user";
+// import User from "@lib/models/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,26 +8,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       // Connect to the database
       await dbConnect();
-
+      const secret = process.env.NEXTAUTH_SECRET;
       // Get the user who is creating the integration
-      const createdBy = await User.findById(req.body.createdBy);
+      // const createdBy = await User.findById(req.body.createdBy);
 
       // Create the new integration
       const newIntegration = new Integration({
         name: req.body.name,
-        description: req.body.description,
         apiKey: req.body.apiKey,
-        triggers: req.body.triggers,
-        actions: req.body.actions,
-        createdBy: createdBy._id,
+        secret,
+        description: req.body.description,
+        createdBy: req.body.apiKey,
       });
 
       // Save the new integration to the database
       await newIntegration.save();
 
       // Add the new integration to the user's list of integrations
-      createdBy.integrations.push(newIntegration._id);
-      await createdBy.save();
+      // createdBy.integrations.push(newIntegration._id);
+      // await createdBy.save();
 
       res.status(201).json({ message: "Integration created successfully." });
     } catch (error) {

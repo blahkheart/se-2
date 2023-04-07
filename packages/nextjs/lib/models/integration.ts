@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface IntegrationDocument extends mongoose.Document {
   name: string;
   apiKey: string;
+  secret: string;
   description: string;
   createdBy: mongoose.Schema.Types.ObjectId;
 }
@@ -16,6 +17,11 @@ const integrationSchema = new mongoose.Schema<IntegrationDocument>({
     type: String,
   },
   apiKey: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  secret: {
     type: String,
     required: true,
     unique: true,

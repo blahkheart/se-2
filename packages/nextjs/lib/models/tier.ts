@@ -12,6 +12,7 @@ export interface TierDocument extends mongoose.Document {
   welcomePageUrl: string;
   currency: string;
   createdBy: mongoose.Schema.Types.ObjectId;
+  integrationId: mongoose.Schema.Types.ObjectId;
 }
 
 const tierSchema = new mongoose.Schema<TierDocument>(
@@ -30,6 +31,11 @@ const tierSchema = new mongoose.Schema<TierDocument>(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "auth-api.User",
+      required: true,
+    },
+    integrationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Integration",
       required: true,
     },
   },

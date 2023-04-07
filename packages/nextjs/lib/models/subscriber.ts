@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export interface SubscriberDocument extends mongoose.Document {
-  user: mongoose.Schema.Types.ObjectId;
-  membership: mongoose.Schema.Types.ObjectId;
+  email: string;
+  tier: mongoose.Schema.Types.ObjectId;
   startDate: Date;
   endDate: Date;
   isActive: boolean;
@@ -10,8 +10,12 @@ export interface SubscriberDocument extends mongoose.Document {
 
 const subscriberSchema = new mongoose.Schema<SubscriberDocument>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "auth-api.User", required: true },
-    membership: {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    tier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tier",
       required: true,

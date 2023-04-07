@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
 import { WagmiConfig } from "wagmi";
@@ -14,7 +16,7 @@ import { wagmiClient } from "~~/services/web3/wagmiClient";
 import { appChains } from "~~/services/web3/wagmiConnectors";
 import "~~/styles/globals.css";
 
-const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
+const ScaffoldEthApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => {
   const price = useEthPrice();
   const setEthPrice = useAppStore(state => state.setEthPrice);
 
@@ -28,14 +30,16 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
     <WagmiConfig client={wagmiClient}>
       <NextNProgress />
       <RainbowKitProvider chains={appChains.chains} avatar={BlockieAvatar}>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="relative flex flex-col flex-1">
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="relative flex flex-col flex-1">
+              <Component {...pageProps} />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </SessionProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

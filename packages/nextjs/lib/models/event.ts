@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export interface EventDocument extends mongoose.Document {
   integrationId: mongoose.Schema.Types.ObjectId;
+  tierId: mongoose.Schema.Types.ObjectId;
   name: string;
   createdBy?: mongoose.Schema.Types.ObjectId;
 }
@@ -13,6 +14,11 @@ const eventSchema = new mongoose.Schema<EventDocument>(
       ref: "Integration",
       required: true,
     },
+    tierId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tier",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -20,7 +26,6 @@ const eventSchema = new mongoose.Schema<EventDocument>(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subscriber",
-      required: true,
     },
   },
   {
