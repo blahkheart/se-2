@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 export interface IntegrationDocument extends mongoose.Document {
   name: string;
   apiKey: string;
-  secret: string;
+  siteUrl: string;
   description: string;
   createdBy: mongoose.Schema.Types.ObjectId;
 }
@@ -21,10 +21,9 @@ const integrationSchema = new mongoose.Schema<IntegrationDocument>({
     required: true,
     unique: true,
   },
-  secret: {
+  siteUrl: {
     type: String,
     required: true,
-    unique: true,
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

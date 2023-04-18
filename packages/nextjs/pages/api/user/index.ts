@@ -1,4 +1,3 @@
-// import mongoose from "mongoose";
 import User, { UserDocument } from "@lib/models/user";
 import type { NextApiRequest, NextApiResponse } from "next";
 

@@ -28,3 +28,14 @@ export async function getUsers() {
     return { error: "Failed to fetch users" };
   }
 }
+export async function getUser(address: string) {
+  try {
+    if (!db) await init();
+    const _data = await User.findOne({ address });
+    // const result = _data.map((user: UserDocument) => ({ ...user.toObject(), id: user._id.toString() }));
+    const result = _data.map((user: UserDocument) => ({ ...user.toObject(), id: user._id.toString() }));
+    return { users: result };
+  } catch (error) {
+    return { error: "Failed to fetch users" };
+  }
+}

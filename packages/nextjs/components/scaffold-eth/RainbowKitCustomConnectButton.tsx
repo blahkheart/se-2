@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useSession } from "next-auth/react";
+import { useAccount, useDisconnect } from "wagmi";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { Balance, BlockieAvatar } from "~~/components/scaffold-eth";
 import { useAutoConnect, useNetworkColor } from "~~/hooks/scaffold-eth";
@@ -8,23 +11,36 @@ import { getTargetNetwork } from "~~/utils/scaffold-eth";
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { data: session } = useSession();
   useAutoConnect();
-
   const networkColor = useNetworkColor();
   const configuredNetwork = getTargetNetwork();
 
+  useEffect(() => {
+    if (session && session?.user?.name !== address) {
+      disconnect();
+    }
+  }, [address]);
+
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openAccountModal, openConnectModal, openChainModal, mounted }) => {
-        const connected = mounted && account && chain;
+      {({ account, chain, openAccountModal, openConnectModal, openChainModal, authenticationStatus, mounted }) => {
+        // Note: If your app doesn't use authentication,
+        // you can remove all 'authenticationStatus' checks
+
+        const ready = mounted && authenticationStatus !== "loading";
+        const connected =
+          ready && account && chain && (!authenticationStatus || authenticationStatus === "authenticated");
 
         return (
           <>
             {(() => {
-              if (!connected) {
+              if (!session || !connected) {
                 return (
                   <button className="btn btn-primary btn-sm" onClick={openConnectModal} type="button">
-                    Connect Wallet
+                    {!connected ? "Connect Wallet" : !session ? "Sign Message" : "Get Started"}
                   </button>
                 );
               }

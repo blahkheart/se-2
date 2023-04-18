@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         apiKey: req.body.apiKey,
         secret,
         description: req.body.description,
-        createdBy: req.body.apiKey,
+        createdBy: req.body.createdBy,
       });
 
       // Save the new integration to the database

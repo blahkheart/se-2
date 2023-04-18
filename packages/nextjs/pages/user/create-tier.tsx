@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import Subscriber, { SubscriberDocument } from "@lib/models/subscriber";
+// import User, { UserDocument } from "@lib/models/user";
 import type { NextPage } from "next";
 import { GetServerSideProps } from "next";
 import { useAccount } from "wagmi";
-import { CreateIntegration } from "~~/components/ghost-unlock/CreateIntegration";
+// import { CreateIntegration } from "~~/components/ghost-unlock/CreateIntegration";
 import { CreateTier } from "~~/components/ghost-unlock/CreateTier";
-import { ListSubscribers } from "~~/components/ghost-unlock/ListSubscribers";
-import dbConnect from "~~/lib/dbConnect";
+// import { ListUsers } from "~~/components/ghost-unlock/ListUsers";
 import handleUser from "~~/services/web3/handleUser";
 
 interface Props {
-  subscribers: SubscriberDocument[];
+  integrationId: string;
 }
 
-const ExampleUI: NextPage<Props> = ({ subscribers }) => {
-  const handleSuccess = (): void => console.log("Hello success");
+const CreateTierPage: NextPage<Props> = ({ integrationId }) => {
   const [isUser, setIsUser] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
   useEffect(() => {
@@ -23,7 +21,7 @@ const ExampleUI: NextPage<Props> = ({ subscribers }) => {
       handleUser(address)
         .then(user => {
           // Use the user document however you like
-          console.log(`User ${user._id} has address ${user.address}`);
+          console.log(`User ${user._id}66 ${user.address}`);
           if (user.address) setIsUser(true);
         })
         .catch(error => {
@@ -31,9 +29,6 @@ const ExampleUI: NextPage<Props> = ({ subscribers }) => {
         });
     }
   }, [address, isConnected]);
-  // console.log("address", address);
-  // console.log("address-connected", isConnected);
-  // console.log("address-locatin", `${window.location.href}?address=${address}`);
 
   return (
     <>
@@ -45,10 +40,8 @@ const ExampleUI: NextPage<Props> = ({ subscribers }) => {
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </Head>
       {isConnected && isUser ? (
-        <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-          <CreateTier onSuccess={handleSuccess} />
-          <CreateIntegration />
-          <ListSubscribers subscribers={subscribers} />
+        <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
+          <CreateTier integrationId={integrationId} />
         </div>
       ) : (
         <div className="flex items-center flex-col flex-grow pt-10 mt-8">
@@ -59,15 +52,15 @@ const ExampleUI: NextPage<Props> = ({ subscribers }) => {
   );
 };
 
-export default ExampleUI;
+export default CreateTierPage;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   try {
-    await dbConnect();
-    // const user = context.query.address;
-    console.log("context", context.query.address);
-    const users: SubscriberDocument[] = await Subscriber.find({});
-    return { props: { users: JSON.parse(JSON.stringify(users)) } };
+    const integrationId = context.query.integrationId;
+    if (!integrationId) {
+      return { props: { integrationId: null } };
+    }
+    return { props: { integrationId: integrationId } };
   } catch (e) {
     console.error(e);
     return { props: { users: [] } }; // return an empty array if there's an error

@@ -1,18 +1,19 @@
 import Head from "next/head";
+// import Link from "next/link";
 import { useRouter } from "next/router";
-import Integration, { IntegrationDocument } from "@lib/models/integration";
+import Tier, { TierDocument } from "@lib/models/tier";
 import type { NextPage } from "next";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth/next";
-import { ListIntegrations } from "~~/components/ghost-unlock/ListIntegrations";
+// import { BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ListTiers } from "~~/components/ghost-unlock/ListTiers";
 import dbConnect from "~~/lib/dbConnect";
-import authOptions from "~~/pages/api/auth/auth-options";
 
 interface Props {
-  integrations: IntegrationDocument[];
+  tiers: TierDocument[];
+  integrationId: string;
 }
 
-const Index: NextPage<Props> = ({ integrations }) => {
+const Index: NextPage<Props> = ({ tiers, integrationId }) => {
   const router = useRouter();
 
   return (
@@ -27,14 +28,14 @@ const Index: NextPage<Props> = ({ integrations }) => {
           <h1 className="text-center mb-8">
             <span className="block text-4xl font-bold">Ghost 👻 Unlock </span>
           </h1>
-          <ListIntegrations integrations={integrations} />
-          {integrations && integrations.length > 0 && (
+          <ListTiers integrationId={integrationId} tiers={tiers} />
+          {tiers && tiers.length > 0 && (
             <div className="px-5 mx-5">
               <button
-                onClick={() => router.push("/user/new-integration")}
+                onClick={() => router.push(`/user/create-tier?integrationId=${integrationId}`)}
                 className="btn btn-primary rounded-full capitalize font-normal font-white flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
               >
-                New integration
+                New tier
               </button>
             </div>
           )}
@@ -49,14 +50,12 @@ export default Index;
 export const getServerSideProps: GetServerSideProps = async context => {
   try {
     await dbConnect();
-    const session: any = await getServerSession(context.req, context.res, authOptions);
-    const userId = session?.user.id;
-    console.log("context", userId);
-    // const integrations: IntegrationDocument[] = await Integration.find({ createdBy: userId });
-    const integrations: IntegrationDocument[] = await Integration.find({});
-    return { props: { integrations: JSON.parse(JSON.stringify(integrations)) } };
+    // const tier = context.query.address;
+    const integrationId = context.query.integrationId;
+    const tiers: TierDocument[] = await Tier.find({});
+    return { props: { tiers: JSON.parse(JSON.stringify(tiers)), integrationId } };
   } catch (e) {
     console.error(e);
-    return { props: { integrations: [] } }; // return an empty array if there's an error
+    return { props: { tiers: [] } }; // return an empty array if there's an error
   }
 };

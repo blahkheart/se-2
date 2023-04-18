@@ -1,14 +1,81 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { AddressInput, InputBase } from "../scaffold-eth";
-
-// import { TierDocument } from "@lib/models/tier";
+// import { KJUR, Utf8, b64utoutf8 } from "jsrsasign";
+// import User from "@lib/models/user";
+// import { NextApiRequest, NextApiResponse } from "next";
+// import { IntegrationDocument } from "@lib/models/integration";
 // import axios from "axios";
+// import Integration from "@lib/models/integration";
+// import User from "@lib/models/user";
+// import axios from "axios";
+// import jwt, { Secret } from "jsonwebtoken";
+import { useAccount } from "wagmi";
+
+// const { ADMIN_API_KEY, GHOST_BLOG_URL } = process.env;
+// if (!ADMIN_API_KEY || !GHOST_BLOG_URL)
+//   throw new Error(`Add ${!ADMIN_API_KEY && "Ghost Admin API key " && !GHOST_BLOG_URL && "Blog URL "}to .env`);
+
+// const [id, secret] = ADMIN_API_KEY.split(":");
+// const token = jwt.sign({}, Buffer.from(secret, "hex"), {
+//   keyid: id,
+//   algorithm: "HS256",
+//   expiresIn: "5m",
+//   audience: `/admin/`,
+// });
+
+// const ghostApiUrl = `${GHOST_BLOG_URL}/ghost/api/admin/tiers/`;
+// const headers = {
+//   Origin: "http://localhost:3000",
+//   "Content-Type": "application/json",
+//   Authorization: `Ghost ${token}`,
+//   "Accept-Version": "v5.24",
+// };
 
 interface Props {
-  onSuccess: () => void;
+  integrationId: string;
+}
+interface User {
+  address: string;
+  _id: string;
+}
+// interface GhostTierResponse {
+//   id: string;
+//   name: string;
+//   description: string | null;
+//   slug: string;
+//   active: boolean;
+//   type: string;
+//   welcome_page_url: string | null;
+//   created_at: Date;
+//   updated_at: Date;
+//   visibility: string;
+//   benefits: string[];
+//   trial_days: number;
+// }
+interface IntegrationData {
+  _id: string;
+  name: string;
+  apiKey: string;
+  description?: string;
+  siteUrl?: string;
+  createdBy: string;
 }
 
-export const CreateTier: React.FC<Props> = ({ onSuccess }) => {
+// {
+//   "id": "63864fc59536255fe06246e4",
+//   "name": "Free",
+//   "description": null,
+//   "slug": "free",
+//   "active": true,
+//   "type": "free",
+//   "welcome_page_url": null,
+//   "created_at": "2022-11-29T18:30:29.000Z",
+//   "updated_at": "2022-11-29T18:30:29.000Z",
+//   "visibility": "public",
+//   "benefits": [],
+//   "trial_days": 0
+// }
+export const CreateTier: React.FC<Props> = ({ integrationId }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [visibility, setVisibility] = useState("");
@@ -17,21 +84,39 @@ export const CreateTier: React.FC<Props> = ({ onSuccess }) => {
   const [monthlyPrice, setMonthlyPrice] = useState(0);
   const [yearlyPrice, setYearlyPrice] = useState(0);
   const [currency, setCurrency] = useState("");
-  //   id: string;
-  //   name: string;
-  //   lockAddress: string;
-  //   description: string;
-  //   type: string; // free || paid
-  //   visibility: string; public || private
-  //   monthlyPrice: number;
-  //   yearlyPrice: number;
-  //   welcomePageUrl: string;
-  //     currency: string;
+  const { address, isConnected } = useAccount();
+  // const [userId, setUserId] = useState("");
+  // const [apiKey, setApiKey] = useState("");
+  const [userData, setUserData] = useState<User>();
+  const [integrationData, setIntegrationData] = useState<IntegrationData>();
+  // const [siteUrl, setSiteUrl] = useState("")
 
-  //   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //     console.log(e.target.value as any);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (address && isConnected && integrationId) {
+        await fetch(`/api/user/get?address=${address}`).then(async res => {
+          const _user = await res.json();
+          setUserData(_user);
+        });
+        await fetch(`/api/integration/get?integrationId=${integrationId}`).then(async res => {
+          const _integration = await res.json();
+          setIntegrationData(_integration);
+          console.log(integrationData);
+        });
+      }
+    };
+    fetchData();
+  }, [address, isConnected, integrationId]);
 
+  // const payload = {
+  //   name,
+  //   description,
+  //   type,
+  //   visibility,
+  //   monthlyPrice,
+  //   yearlyPrice,
+  //   currency,
+  // };
   const handleSubmit = async () => {
     try {
       // call ghost admin API
@@ -53,6 +138,63 @@ export const CreateTier: React.FC<Props> = ({ onSuccess }) => {
       //     // setIntegrationId("");
       //     onSuccess();
       //   }
+      // const apiKey: Secret = "639f7aadce990a0eb4413b24:2f65379fd3cc79ba726d89da45ed5278b2a6bb58594eada0da6ab413d7037dbd";
+      // const [id, secret] = apiKey.split(":");
+      // if (typeof secret !== "string") {
+      //   throw new Error("Invalid API key format");
+      // }
+      // const payL = {
+      //   keyid: id,
+      //   algorithm: "HS256",
+      //   expiresIn: "5m",
+      //   audience: `/admin/`,
+      // }
+      // const token = generateToken(payL, secret);
+      // const token = jwt.sign({}, Buffer.from(secret, "hex"), {
+      //   keyid: id,
+      //   algorithm: "HS256",
+      //   expiresIn: "5m",
+      //   audience: `/admin/`,
+      // });
+      // const token = jwt.sign({ _id: "foundUser._id?.toString()", name: "foundUser" }, secret, {
+      //   expiresIn: "2 days",
+      // });
+      // console.log("token", token)
+      // const headers = {
+      //   "Content-Type": "application/json",
+      //   Authorization: `Ghost ${token}`,
+      //   "Accept-Version": "v5.24",
+      // };
+      // const payload = {
+      //   name,
+      //   description,
+      //   type,
+      //   visibility,
+      //   monthlyPrice,
+      //   yearlyPrice,
+      //   currency,
+      // };
+      // const ghostApiUrl = "http://localhost:2368/ghost/api/admin/tiers/";
+      // try {
+      //   const response = await fetch(ghostApiUrl, {
+      //     method: "POST",
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //       "Accept-Version": "v5.24",
+      //     },
+      //     body: JSON.stringify(payload),
+      //   });
+
+      //   if (response.status === 201) {
+      //     const data: GhostTierResponse = await response.json();
+      //     console.log("axios id::", data.id);
+      //   } else {
+      //     console.error(`Failed with status ${response.status}`);
+      //   }
+      // } catch (error) {
+      //   console.error("axios err::", error);
+      // }
       const data = {
         name,
         lockAddress,
@@ -62,11 +204,12 @@ export const CreateTier: React.FC<Props> = ({ onSuccess }) => {
         monthlyPrice,
         yearlyPrice,
         currency,
+        createdBy: userData?._id,
+        integrationId,
       };
       console.log("values", data);
-      onSuccess();
     } catch (error) {
-      console.error(error);
+      console.error("err global:", error);
     }
   };
 

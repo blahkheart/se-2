@@ -22,9 +22,9 @@ export const ListSubscribers: React.FC<Props> = ({ subscribers }) => {
   };
 
   return (
-    <div className="flex items-center flex-col flex-grow pt-10 mb-6">
-      <div className="flex flex-col max-w-md bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full">
-        <h1 className="text-3xl font-bold mb-4">My Subscribers</h1>
+    <div className="flex items-center flex-col flex-grow pt-10 px-10 mb-6 w-full">
+      <div className="flex flex-col bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full">
+        <h1 className="text-3xl font-bold mb-6">My Subscribers</h1>
         {errorMessage && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
             {errorMessage}
@@ -44,6 +44,7 @@ export const ListSubscribers: React.FC<Props> = ({ subscribers }) => {
                   </button>
                 </div>
                 {/* <p className="text-gray-500">{subscriber.address}</p> */}
+                <div className="divider px-10 mx-10 py-3"></div>
               </li>
             ))
           ) : (
