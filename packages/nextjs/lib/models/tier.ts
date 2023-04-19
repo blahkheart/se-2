@@ -27,6 +27,7 @@ const tierSchema = new mongoose.Schema<TierDocument>(
     type: { type: String },
     visibility: { type: String },
     monthlyPrice: { type: Number },
+    yearlyPrice: { type: Number },
     welcomePageUrl: { type: String },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
