@@ -1,16 +1,10 @@
 import dbConnect from "@lib/dbConnect";
 import Integration from "@lib/models/integration";
-// import User from "@lib/models/user";
 import { NextApiRequest, NextApiResponse } from "next";
+import { IntegrationUpdateData } from "~~/types/integrationUpdateData";
 
 // Todos
-// use session to process api requests
-type IntegrationUpdateData = {
-  name: string | undefined;
-  apiKey: string | undefined;
-  siteUrl: string | undefined;
-  description: string | undefined;
-};
+// use session to protect api route
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "PUT") {

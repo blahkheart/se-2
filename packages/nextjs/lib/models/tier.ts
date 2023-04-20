@@ -29,6 +29,7 @@ const tierSchema = new mongoose.Schema<TierDocument>(
     monthlyPrice: { type: Number },
     yearlyPrice: { type: Number },
     welcomePageUrl: { type: String },
+    currency: { type: String },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "auth-api.User",

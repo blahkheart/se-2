@@ -1,34 +1,17 @@
-import { useEffect, useState } from "react";
 import Head from "next/head";
-// import User, { UserDocument } from "@lib/models/user";
 import type { NextPage } from "next";
 import { GetServerSideProps } from "next";
+import { useSession } from "next-auth/react";
 import { useAccount } from "wagmi";
-// import { CreateIntegration } from "~~/components/ghost-unlock/CreateIntegration";
 import { CreateTier } from "~~/components/ghost-unlock/CreateTier";
-// import { ListUsers } from "~~/components/ghost-unlock/ListUsers";
-import handleUser from "~~/services/web3/handleUser";
 
 interface Props {
   integrationId: string;
 }
 
 const CreateTierPage: NextPage<Props> = ({ integrationId }) => {
-  const [isUser, setIsUser] = useState<boolean>(false);
-  const { address, isConnected } = useAccount();
-  useEffect(() => {
-    if (isConnected && address) {
-      handleUser(address)
-        .then(user => {
-          // Use the user document however you like
-          console.log(`User ${user._id}66 ${user.address}`);
-          if (user.address) setIsUser(true);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [address, isConnected]);
+  const { data: session } = useSession();
+  const { isConnected } = useAccount();
 
   return (
     <>
@@ -39,7 +22,7 @@ const CreateTierPage: NextPage<Props> = ({ integrationId }) => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </Head>
-      {isConnected && isUser ? (
+      {isConnected && session?.user ? (
         <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
           <CreateTier integrationId={integrationId} />
         </div>

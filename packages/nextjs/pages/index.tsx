@@ -1,9 +1,12 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
+import unlockLogo from "../public/assets/unlockLogo.png";
 import type { NextPage } from "next";
-import { BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 
 const Home: NextPage = () => {
+  const { data: session } = useSession();
   return (
     <>
       <Head>
@@ -15,39 +18,24 @@ const Home: NextPage = () => {
         <div className="px-5">
           <h1 className="text-center mb-8">
             <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">scaffold-eth 2</span>
+            <span className="block text-4xl font-bold">Ghost Unlock</span>
           </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/nextjs/pages/index.tsx</code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract <code className="italic bg-base-300 text-base font-bold">YourContract.sol</code> in{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/hardhat/contracts</code>
+          <p className="text-center text-lg">Enable paid subscriptions on your Ghost site using Unlock Memberships</p>
+          <p className="text-center mt-5">
+            {session?.user?.name ? (
+              <button className="btn rounded-full capitalize font-normal font-white gap-1 hover:gap-2 transition-all tracking-widest">
+                <Link href={"/user"}>Get started</Link>
+              </button>
+            ) : (
+              "Connect your wallet to begin"
+            )}
           </p>
         </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
+        <div className="flex-grow w-full mt-4 px-8 py-4">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contract
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <SparklesIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Experiment with{" "}
-                <Link href="/example-ui" passHref className="link">
-                  Example UI
-                </Link>{" "}
-                to build your own UI.
-              </p>
+            <div className="flex flex-col bg-base-100 text-center items-center max-w-xs rounded-3xl">
+              <Image src={unlockLogo} alt="Unlock Protocol" />
             </div>
           </div>
         </div>

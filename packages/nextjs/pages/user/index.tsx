@@ -12,7 +12,7 @@ interface Props {
   integrations: IntegrationDocument[];
 }
 
-const Index: NextPage<Props> = ({ integrations }) => {
+const Index: NextPage<Props> & { auth?: boolean } = ({ integrations }) => {
   const router = useRouter();
 
   return (
@@ -43,6 +43,7 @@ const Index: NextPage<Props> = ({ integrations }) => {
     </>
   );
 };
+Index.auth = true;
 
 export default Index;
 

@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { InputBase } from "../scaffold-eth";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
+import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
+import { IntegrationModalValue } from "~~/types/integrationModalValues";
+import { TierModalValues } from "~~/types/tierModalValues";
 import { notification } from "~~/utils/scaffold-eth";
 import { encryptData as encryptApiKey } from "~~/utils/scaffold-eth";
 
@@ -11,30 +14,13 @@ interface Props {
   type: "edit" | "integration";
 }
 
-type IntegrationModalValue = {
-  name: string;
-  description: string;
-  apiKey: string;
-  siteUrl: string;
-};
 const defaultIntegrationModalValues = {
   name: "",
   description: "",
   apiKey: "",
   siteUrl: "",
 };
-interface DefaultUserMod {
-  id?: string | null | undefined;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
-}
-type TierModalValues = {
-  name: string;
-  description: string;
-  visibility: string;
-  yearlyPrice: number;
-};
+
 const defaultTierModalValues = {
   name: "",
   description: "",

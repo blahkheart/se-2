@@ -10,12 +10,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     try {
       const { address }: UserData = req.body;
       // Check if user exists in database
-      let user = await User.findOne({ address });
-      // If user doesn't exist, create a new user in the database
+      const user = await User.findOne({ address });
+      // If user doesn't exist end with 404
       if (!user) {
-        user = await User.create({ address });
-        await user.save();
-        res.status(201).json(user);
+        res.status(404).end();
       } else {
         // Return the user document as JSON response
         res.status(200).json(user);

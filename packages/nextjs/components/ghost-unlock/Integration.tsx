@@ -4,27 +4,13 @@ import { EditModal } from "./EditModal";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
 import { ClipboardDocumentIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
+import { IntegrationData } from "~~/types/integrationData";
 import { decryptData } from "~~/utils/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
-type IntegrationData = {
-  id: string;
-  name: string;
-  description?: string | undefined;
-  apiKey: string;
-  siteUrl: string;
-  createdBy: string;
-};
-
 interface Props {
   integration: IntegrationData;
-}
-
-interface DefaultUserMod {
-  id?: string | null | undefined;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
 }
 
 export const Integration: React.FC<Props> = ({ integration }) => {

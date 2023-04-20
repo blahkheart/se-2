@@ -4,17 +4,11 @@ import { AddressInput, InputBase } from "../scaffold-eth";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
+import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface Props {
   integrationId: string;
-}
-
-interface DefaultUserMod {
-  id?: string | null | undefined;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
 }
 
 export const CreateTier: React.FC<Props> = ({ integrationId }) => {
@@ -89,10 +83,6 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
             }}
             className="select select-bordered select-ghost input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
           >
-            <option disabled selected>
-              Select type
-            </option>
-            <option value={"free"}>Free</option>
             <option value={"paid"}>Paid</option>
           </select>
         </div>

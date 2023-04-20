@@ -1,63 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { InputBase } from "../scaffold-eth";
 import { IntegrationDocument } from "@lib/models/";
-// import User from "@lib/models/user";
 import axios from "axios";
-import { useAccount } from "wagmi";
-// import dbConnect from "~~/lib/dbConnect";
-import handleUser from "~~/services/web3/handleUser";
-
-interface User {
-  _id: string;
-  address: string;
-}
+import { useSession } from "next-auth/react";
+import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
 
 export const CreateIntegration: React.FC = () => {
   const [name, setName] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [description, setDescription] = useState("");
   const [siteUrl, setSiteUrl] = useState("");
-  const [user, setIsUser] = useState<User>();
+  const { data: session } = useSession();
+  const user: DefaultUserMod | null | undefined = session?.user;
 
   const router = useRouter();
-  const { address, isConnected } = useAccount();
-  useEffect(() => {
-    if (isConnected && address) {
-      handleUser(address)
-        .then(_user => {
-          // Use the _user document however you like
-          if (_user) setIsUser(_user);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [address, isConnected]);
 
   const handleSubmit = async () => {
     try {
-      console.log("user", user);
       // create integration in DB
-      if (!user) return;
       const response = await axios.post<IntegrationDocument>("/api/integration/create", {
         name,
         description,
         siteUrl,
         apiKey,
-        createdBy: user._id.toString(),
+        createdBy: user?.id,
       });
-      if (response.status === 201) {
-        console.log("values-response", response);
-        router.push("/user");
-      }
-      const data = {
-        name,
-        description,
-        apiKey,
-      };
-      console.log("values", data);
-      // }
+      if (response.status === 201) router.push("/user");
     } catch (error) {
       console.error(error);
     }

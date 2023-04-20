@@ -32,8 +32,16 @@ const authOptions: NextAuthOptions = {
             domain: nextAuthUrl.host,
             nonce: await getCsrfToken({ req }),
           });
-          console.log("NEXT_AUTH", result);
           if (result.success) {
+            await dbConnect();
+            // fetch user
+            const address = siwe.address;
+            const user = await User.findOne({ address });
+            if (!user) {
+              // create new user
+              const user = await User.create({ address });
+              await user.save();
+            }
             return {
               id: siwe.address,
             };
@@ -47,9 +55,6 @@ const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {

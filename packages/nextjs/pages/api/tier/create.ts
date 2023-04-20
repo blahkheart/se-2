@@ -9,13 +9,12 @@ import Integration from "~~/lib/models/integration";
 import authOptions from "~~/pages/api/auth/auth-options";
 import { decryptData } from "~~/utils/scaffold-eth";
 
-
 type TierData = {
   id: string;
   name: string;
   lockAddress: string;
   description?: string;
-  type?: "free" | "paid";
+  type?: "paid";
   visibility?: "public" | "private";
   monthlyPrice?: number;
   yearlyPrice?: number | undefined;

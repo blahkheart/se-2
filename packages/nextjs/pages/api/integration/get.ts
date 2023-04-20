@@ -2,10 +2,6 @@ import Integration, { IntegrationDocument } from "@lib/models/integration";
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "~~/lib/dbConnect";
 
-// interface IntegrationData {
-//   integrationId: string;
-// }
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IntegrationDocument | { message: string }>,

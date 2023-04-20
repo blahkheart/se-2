@@ -2,14 +2,11 @@ import User, { UserDocument } from "@lib/models/user";
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "~~/lib/dbConnect";
 
-// interface UserData {
-//   address: string;
-// }
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse<UserDocument | { message: string }>) {
   const { query } = req;
   const { address } = query;
   await dbConnect();
+
   if (req.method === "GET") {
     try {
       // Check if user exists in database

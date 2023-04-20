@@ -3,15 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Integration } from "./Integration";
 import { IntegrationDocument } from "@lib/models/integration";
-
-type IntegrationData = {
-  id: string;
-  name: string;
-  description?: string | undefined;
-  apiKey: string;
-  siteUrl: string;
-  createdBy: string;
-};
+import { IntegrationData } from "~~/types/integrationData";
 
 interface Props {
   integrations: IntegrationDocument[];
