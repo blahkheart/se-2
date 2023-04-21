@@ -1,18 +1,13 @@
 import Head from "next/head";
 import type { NextPage } from "next";
 import { GetServerSideProps } from "next";
-import { useSession } from "next-auth/react";
-import { useAccount } from "wagmi";
 import { CreateTier } from "~~/components/ghost-unlock/CreateTier";
 
 interface Props {
   integrationId: string;
 }
 
-const CreateTierPage: NextPage<Props> = ({ integrationId }) => {
-  const { data: session } = useSession();
-  const { isConnected } = useAccount();
-
+const CreateTierPage: NextPage<Props> & { auth?: boolean } = ({ integrationId }) => {
   return (
     <>
       <Head>
@@ -22,18 +17,13 @@ const CreateTierPage: NextPage<Props> = ({ integrationId }) => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </Head>
-      {isConnected && session?.user ? (
-        <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
-          <CreateTier integrationId={integrationId} />
-        </div>
-      ) : (
-        <div className="flex items-center flex-col flex-grow pt-10 mt-8">
-          <h2 className="block text-4xl font-bold">Connect your wallet</h2>
-        </div>
-      )}
+      <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
+        <CreateTier integrationId={integrationId} />
+      </div>
     </>
   );
 };
+CreateTierPage.auth = true;
 
 export default CreateTierPage;
 

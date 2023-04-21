@@ -1,10 +1,7 @@
 import Head from "next/head";
-// import Link from "next/link";
-// import { useRouter } from "next/router";
 import Subscriber, { SubscriberDocument } from "@lib/models/subscriber";
 import type { NextPage } from "next";
 import { GetServerSideProps } from "next";
-// import { BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { ListSubscribers } from "~~/components/ghost-unlock/ListSubscribers";
 import dbConnect from "~~/lib/dbConnect";
 
@@ -12,9 +9,7 @@ interface Props {
   subscribers: SubscriberDocument[];
 }
 
-const Index: NextPage<Props> = ({ subscribers }) => {
-  // const router = useRouter();
-
+const Index: NextPage<Props> & { auth?: boolean } = ({ subscribers }) => {
   return (
     <>
       <Head>
@@ -33,7 +28,7 @@ const Index: NextPage<Props> = ({ subscribers }) => {
     </>
   );
 };
-
+Index.auth = true;
 export default Index;
 
 export const getServerSideProps: GetServerSideProps = async context => {

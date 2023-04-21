@@ -8,17 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       // Connect to the database
       await dbConnect();
-      const secret = process.env.NEXTAUTH_SECRET;
-      // Get the user who is creating the integration
-      // const createdBy = await User.findById(req.body.createdBy);
+      const { name, apiKey, siteUrl, description, createdBy } = req.body;
 
       // Create the new integration
       const newIntegration = new Integration({
-        name: req.body.name,
-        apiKey: req.body.apiKey,
-        secret,
-        description: req.body.description,
-        createdBy: req.body.createdBy,
+        name,
+        apiKey,
+        siteUrl,
+        description,
+        createdBy,
       });
 
       // Save the new integration to the database
@@ -29,8 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // await createdBy.save();
 
       res.status(201).json({ message: "Integration created successfully." });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(error.message);
       res.status(500).json({ message: "Internal server error." });
     }
   } else {

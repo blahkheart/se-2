@@ -5,7 +5,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { CreateIntegration } from "~~/components/ghost-unlock/CreateIntegration";
 
-const NewIntegration: NextPage = () => {
+const NewIntegration: NextPage & { auth?: boolean } = () => {
   const { isConnected } = useAccount();
 
   return (
@@ -29,5 +29,5 @@ const NewIntegration: NextPage = () => {
     </>
   );
 };
-
+NewIntegration.auth = true;
 export default NewIntegration;

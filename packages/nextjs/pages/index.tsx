@@ -23,9 +23,12 @@ const Home: NextPage = () => {
           <p className="text-center text-lg">Enable paid subscriptions on your Ghost site using Unlock Memberships</p>
           <p className="text-center mt-5">
             {session?.user?.name ? (
-              <button className="btn rounded-full capitalize font-normal font-white gap-1 hover:gap-2 transition-all tracking-widest">
-                <Link href={"/user"}>Get started</Link>
-              </button>
+              <Link
+                href={"/user"}
+                className="btn rounded-full capitalize font-normal font-white gap-1 hover:gap-2 transition-all tracking-widest"
+              >
+                Get started
+              </Link>
             ) : (
               "Connect your wallet to begin"
             )}

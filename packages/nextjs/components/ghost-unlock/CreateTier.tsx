@@ -14,7 +14,7 @@ interface Props {
 export const CreateTier: React.FC<Props> = ({ integrationId }) => {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("paid");
   const [visibility, setVisibility] = useState("");
   const [lockAddress, setLockAddress] = useState("");
   const [description, setDescription] = useState("");
@@ -44,11 +44,11 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
         visibility,
         monthlyPrice,
         yearlyPrice,
-        currency,
+        currency: currency.toUpperCase(),
         createdBy: user?.id,
         integrationId,
       });
-      console.log("axios res::", response.data);
+
       response &&
         response.status === 201 &&
         notification.success("Tier created successfully") &&

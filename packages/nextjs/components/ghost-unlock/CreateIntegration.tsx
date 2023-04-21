@@ -4,31 +4,47 @@ import { InputBase } from "../scaffold-eth";
 import { IntegrationDocument } from "@lib/models/";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useSignMessage } from "wagmi";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
+import { encryptData as encryptApiKey } from "~~/utils/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 export const CreateIntegration: React.FC = () => {
   const [name, setName] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [description, setDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [siteUrl, setSiteUrl] = useState("");
   const { data: session } = useSession();
   const user: DefaultUserMod | null | undefined = session?.user;
-
+  const { signMessageAsync } = useSignMessage({
+    message: `${user?.name + ":" + user?.id}`,
+  });
   const router = useRouter();
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       // create integration in DB
+      const encryptionKey = await signMessageAsync();
+      const _encryptedApiKey = encryptApiKey(apiKey, encryptionKey);
+
       const response = await axios.post<IntegrationDocument>("/api/integration/create", {
         name,
         description,
         siteUrl,
-        apiKey,
+        apiKey: _encryptedApiKey,
         createdBy: user?.id,
       });
-      if (response.status === 201) router.push("/user");
+      if (response.status === 201) {
+        notification.success("Integration created successfully");
+        router.push("/user");
+      }
     } catch (error) {
       console.error(error);
+      notification.error("Error creating Integration");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,7 +66,9 @@ export const CreateIntegration: React.FC = () => {
         </div>
         <button
           onClick={handleSubmit}
-          className="btn btn-primary rounded-full capitalize font-normal font-white flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
+          className={`btn btn-primary rounded-full capitalize font-normal font-white flex items-center gap-1 hover:gap-2 transition-all tracking-widest ${
+            isLoading ? "loading" : ""
+          }`}
         >
           Create
         </button>

@@ -13,7 +13,7 @@ interface Props {
   integrationId: string;
 }
 
-const Index: NextPage<Props> = ({ tiers, integrationId }) => {
+const Index: NextPage<Props> & { auth?: boolean } = ({ tiers, integrationId }) => {
   const router = useRouter();
 
   return (
@@ -44,15 +44,14 @@ const Index: NextPage<Props> = ({ tiers, integrationId }) => {
     </>
   );
 };
-
+Index.auth = true;
 export default Index;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   try {
     await dbConnect();
-    // const tier = context.query.address;
     const integrationId = context.query.integrationId;
-    const tiers: TierDocument[] = await Tier.find({});
+    const tiers: TierDocument[] = await Tier.find({ integrationId });
     return { props: { tiers: JSON.parse(JSON.stringify(tiers)), integrationId } };
   } catch (e) {
     console.error(e);

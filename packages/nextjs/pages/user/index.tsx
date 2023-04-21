@@ -52,9 +52,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
     await dbConnect();
     const session: any = await getServerSession(context.req, context.res, authOptions);
     const userId = session?.user.id;
-    console.log("context", userId);
-    // const integrations: IntegrationDocument[] = await Integration.find({ createdBy: userId });
-    const integrations: IntegrationDocument[] = await Integration.find({});
+    const integrations: IntegrationDocument[] = await Integration.find({ createdBy: userId });
     return { props: { integrations: JSON.parse(JSON.stringify(integrations)) } };
   } catch (e) {
     console.error(e);
