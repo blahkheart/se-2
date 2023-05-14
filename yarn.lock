@@ -1877,7 +1877,7 @@ __metadata:
     react-dom: ^18.2.0
     react-fast-marquee: ^1.3.5
     react-hot-toast: ^2.4.0
-    siwe: beta
+    siwe: ^2.1.4
     tailwindcss: ^3.1.8
     typescript: ^4.9.5
     use-debounce: ^8.0.4
@@ -2012,7 +2012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spruceid/siwe-parser@npm:^2.0.2":
+"@spruceid/siwe-parser@npm:*":
   version: 2.0.2
   resolution: "@spruceid/siwe-parser@npm:2.0.2"
   dependencies:
@@ -12386,17 +12386,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"siwe@npm:beta":
-  version: 2.1.3
-  resolution: "siwe@npm:2.1.3"
+"siwe@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "siwe@npm:2.1.4"
   dependencies:
-    "@spruceid/siwe-parser": ^2.0.2
+    "@spruceid/siwe-parser": "*"
     "@stablelib/random": ^1.0.1
     uri-js: ^4.4.1
     valid-url: ^1.0.9
   peerDependencies:
-    ethers: ^5.5.1
-  checksum: ccfaf83d504bcd77a32dc673ed54b1787879b2613a910aac9c93b26a9bbe6eaa4b9b94db41008ac379a8ad167086d83cbcaebe8dbd75f7ecf6a330c2b5ac7281
+    ethers: ^5.6.8 || ^6.0.8
+  checksum: a5eb48a72ccd8cca155b667e065a08ea01f626be81c489ccc65e8978cb5928857d31f073d3dabcb951581293a08868ea5cfaa183ae32bd2bc2ed0b3d88fcca77
   languageName: node
   linkType: hard
 
