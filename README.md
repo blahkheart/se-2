@@ -63,6 +63,20 @@ Visit your app on: `http://localhost:3000`. You can tweak the frontend component
 - Edit your frontend in `packages/nextjs/pages/user`
 - Edit your api endpoints in `packages/nextjs/pages/api`
 
+### How it works
+
+As the name implies, the Ghost Unlock integration works with a ghost publication. For convenience we are developing a Ghost theme to facilitate usage of the integration [coming soon]. However, you can deploy your own ghost publication easily using the [ghost documentation](https://ghost.org/docs/). 
+Once you have your ghost publication setup: 
+- Get your admin api key and head over to the Ghost Unlock integration. 
+- Create a new integration for your publication using the admin api key, and enter the url for your publication or `http://localhost:2368` if it hosted locally.
+- Create a new tier for the integration you just created to begin token gating posts 
+  * Deploy two lock smart contracts using Unlock Protocol (one for your monthly plan and another your yearly plan)
+  * Fill the `Create a tier` form and submit. If successful, you will have the tier created on your ghost publication.
+
+**Hint**: We recommend using a 3-letter `Currency` when creating a tier for compatibiliy with the ghost api i.e `USD, EUR, BTC, ETH`. 
+
+**Hint**: Locks used for tier monthly and yearly plans must have non-zero (0) price for compatibiliy with the ghost api i.e `keyPrice > 0`.
+
 ## Deploying your NextJS App
 
 Run `yarn vercel` and follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
