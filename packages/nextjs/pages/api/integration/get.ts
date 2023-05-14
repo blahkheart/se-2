@@ -13,7 +13,6 @@ export default async function handler(
     try {
       // Check if integration exists in database
       const integration = await Integration.findOne({ _id: integrationId });
-      // If integration doesn't exist, create a new integration in the database
       if (!integration) {
         res.status(404).json({ message: "Integration not found" });
       } else {

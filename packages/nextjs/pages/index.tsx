@@ -38,7 +38,7 @@ const Home: NextPage = () => {
         <div className="flex-grow w-full mt-4 px-8 py-4">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div className="flex flex-col bg-base-100 text-center items-center max-w-xs rounded-3xl">
-              <Image src={unlockLogo} alt="Unlock Protocol" />
+              <Image priority={true} src={unlockLogo} alt="Unlock Protocol" />
             </div>
           </div>
         </div>

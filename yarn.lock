@@ -1853,7 +1853,7 @@ __metadata:
     "@types/react-copy-to-clipboard": ^5.0.4
     "@typescript-eslint/eslint-plugin": ^5.39.0
     "@uniswap/sdk": ^3.0.3
-    "@unlock-protocol/contracts": ^0.0.18
+    "@unlock-protocol/contracts": ^0.0.22
     autoprefixer: ^10.4.12
     axios: ^1.3.4
     crypto-js: ^4.1.1
@@ -1867,6 +1867,7 @@ __metadata:
     mongoose: ^7.0.3
     next: ^13.1.6
     next-auth: ^4.21.1
+    nextjs-cors: latest
     nextjs-progressbar: ^0.0.16
     postcss: ^8.4.16
     prettier: ^2.8.4
@@ -3002,10 +3003,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@unlock-protocol/contracts@npm:^0.0.18":
-  version: 0.0.18
-  resolution: "@unlock-protocol/contracts@npm:0.0.18"
-  checksum: 0a7134dff892bd0ba8a0bb10dd6fc3a45037528c0ea55da2ac56e44fc70cea1952eaf625e6ff808282594f85f25d99ae2fb7b1e6f5d837cd110f3acc6df558b8
+"@unlock-protocol/contracts@npm:^0.0.22":
+  version: 0.0.22
+  resolution: "@unlock-protocol/contracts@npm:0.0.22"
+  checksum: bc1cad2dde0d961b4af73bc5430984fa7b64dc905c72b0e4b23c32c4c6a6b5530e9eaf36fe9cb3f3df35d6322b68a2478aa55eec55df0832f13e9af86ed96adf
   languageName: node
   linkType: hard
 
@@ -5478,6 +5479,16 @@ __metadata:
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
+  languageName: node
+  linkType: hard
+
+"cors@npm:^2.8.5":
+  version: 2.8.5
+  resolution: "cors@npm:2.8.5"
+  dependencies:
+    object-assign: ^4
+    vary: ^1
+  checksum: ced838404ccd184f61ab4fdc5847035b681c90db7ac17e428f3d81d69e2989d2b680cc254da0e2554f5ed4f8a341820a1ce3d1c16b499f6e2f47a1b9b07b5006
   languageName: node
   linkType: hard
 
@@ -10332,6 +10343,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nextjs-cors@npm:latest":
+  version: 2.1.2
+  resolution: "nextjs-cors@npm:2.1.2"
+  dependencies:
+    cors: ^2.8.5
+  peerDependencies:
+    next: ^8.1.1-canary.54 || ^9.0.0 || ^10.0.0-0 || ^11.0.0 || ^12.0.0 || ^13.0.0
+  checksum: 92417b4367b1761c8bd3747f3f014a96f199d4101c39f64b03225913daec09f0952dd501f4381d9bee4a424cfc61921e862e7bab6970fc20810c0fbbc924d222
+  languageName: node
+  linkType: hard
+
 "nextjs-progressbar@npm:^0.0.16":
   version: 0.0.16
   resolution: "nextjs-progressbar@npm:0.0.16"
@@ -10558,7 +10580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.1.0, object-assign@npm:^4.1.1":
+"object-assign@npm:^4, object-assign@npm:^4.1.0, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -13755,6 +13777,13 @@ __metadata:
     react:
       optional: true
   checksum: baf07b9130d6fc27b542b0a06a02a788c3cf85bbe4709a765655ac4a66ade016681ff368e0434aceb98925c80747928530842a939f23a1f916b3f81c2b2a1a65
+  languageName: node
+  linkType: hard
+
+"vary@npm:^1":
+  version: 1.1.2
+  resolution: "vary@npm:1.1.2"
+  checksum: ae0123222c6df65b437669d63dfa8c36cee20a504101b2fcd97b8bf76f91259c17f9f2b4d70a1e3c6bbcee7f51b28392833adb6b2770b23b01abec84e369660b
   languageName: node
   linkType: hard
 

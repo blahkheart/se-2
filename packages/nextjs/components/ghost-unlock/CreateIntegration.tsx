@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { InputBase } from "../scaffold-eth";
 import { IntegrationDocument } from "@lib/models/";
 import axios from "axios";
+import crypto from "crypto";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
@@ -20,6 +21,10 @@ export const CreateIntegration: React.FC = () => {
   const { signMessageAsync } = useSignMessage({
     message: `${user?.name + ":" + user?.id}`,
   });
+  const _userSecret = crypto.randomBytes(32).toString("hex");
+  const envSecret = process.env.SECRET;
+  const internalEncryptionKey = `${_userSecret}:${envSecret}`;
+  const _encryptedApiKeyInternal = encryptApiKey(apiKey, internalEncryptionKey);
   const router = useRouter();
 
   const handleSubmit = async () => {
@@ -34,6 +39,8 @@ export const CreateIntegration: React.FC = () => {
         description,
         siteUrl,
         apiKey: _encryptedApiKey,
+        secret: _userSecret,
+        apiKeyInternal: _encryptedApiKeyInternal,
         createdBy: user?.id,
       });
       if (response.status === 201) {

@@ -13,16 +13,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       const user = await User.findOne({ address });
       // If user doesn't exist end with 404
       if (!user) {
-        res.status(404).end();
+        return res.status(404).end();
       } else {
         // Return the user document as JSON response
-        res.status(200).json(user);
+        return res.status(200).json(user);
       }
     } catch (error) {
       console.error(error);
-      res.status(500).send("Internal Server Error");
+      return res.status(500).send("Internal Server Error");
     }
   } else {
-    res.status(405).send("Method Not Allowed");
+    return res.status(405).send("Method Not Allowed");
   }
 }

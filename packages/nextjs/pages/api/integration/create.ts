@@ -8,13 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       // Connect to the database
       await dbConnect();
-      const { name, apiKey, siteUrl, description, createdBy } = req.body;
+      const { name, apiKey, siteUrl, secret, apiKeyInternal, description, createdBy } = req.body;
 
       // Create the new integration
       const newIntegration = new Integration({
         name,
         apiKey,
         siteUrl,
+        secret,
+        apiKeyInternal,
         description,
         createdBy,
       });

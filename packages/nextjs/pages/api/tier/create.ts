@@ -12,7 +12,9 @@ import { decryptData } from "~~/utils/scaffold-eth";
 type TierData = {
   id: string;
   name: string;
-  lockAddress: string;
+  monthlyLockAddress: string;
+  yearlyLockAddress: string;
+  network: number;
   description?: string;
   type?: "paid";
   visibility?: "public" | "private";
@@ -35,7 +37,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // get data from request
     const {
       name,
-      lockAddress,
+      monthlyLockAddress,
+      yearlyLockAddress,
+      network,
       description,
       type,
       visibility,
@@ -48,6 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message,
       signature,
     } = req.body;
+    // get session
     const session: any = await getServerSession(req, res, authOptions);
 
     // verify user
@@ -55,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const integrationCreator = integration.createdBy.toString();
     const ghostBlogBaseUrl = integration.siteUrl;
     const encryptedApiKey = integration.apiKey;
-    const userAddress = session?.user.name;
+    const userAddress = session?.user.name; //user from session
     const decodedAddress = ethers.utils.verifyMessage(message, signature);
     if (userAddress !== decodedAddress || createdBy !== integrationCreator) {
       return res.status(401).json({ message: "User Authorization Failed" });
@@ -79,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       audience: `/admin/`,
     });
 
-    // Create new tier on Ghos
+    // Create new tier on Ghost
     const ghostApiUrl = `${ghostBlogBaseUrl}/ghost/api/admin/tiers/`;
     const headers = {
       "Content-Type": "application/json",
@@ -107,7 +112,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const tierData: TierData = {
         id: tierId,
         name,
-        lockAddress,
+        monthlyLockAddress,
+        yearlyLockAddress,
+        network,
         description,
         type,
         visibility,

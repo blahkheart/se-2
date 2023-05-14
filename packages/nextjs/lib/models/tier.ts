@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 export interface TierDocument extends mongoose.Document {
   id: string;
   name: string;
-  lockAddress: string;
+  monthlyLockAddress: string;
+  yearlyLockAddress: string;
+  network: number;
   description: string;
   type: string;
   visibility: string;
@@ -22,7 +24,9 @@ const tierSchema = new mongoose.Schema<TierDocument>(
       required: true,
     },
     name: { type: String, required: true },
-    lockAddress: { type: String, required: true },
+    monthlyLockAddress: { type: String, required: true, unique: true },
+    yearlyLockAddress: { type: String, required: true, unique: true },
+    network: { type: Number, required: true },
     description: { type: String },
     type: { type: String },
     visibility: { type: String },

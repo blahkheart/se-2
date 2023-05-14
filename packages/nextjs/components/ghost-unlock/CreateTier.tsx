@@ -1,22 +1,42 @@
-import { ChangeEvent, useState } from "react";
+// import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AddressInput, InputBase } from "../scaffold-eth";
 import axios from "axios";
+import { ethers } from "ethers";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
+import { abi as publicLockABI } from "~~/abi/publicLock";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface Props {
   integrationId: string;
 }
+const NETWORKS = [
+  ["Choose network", 0],
+  ["Mainnet", 1],
+  ["Arbitrum", 42161],
+  ["Avalanche (C-Chain)", 43114],
+  ["Base Goerli", 84531],
+  ["BNB Chain", 56],
+  ["Celo", 42220],
+  ["Gnosis", 100],
+  ["Goerli", 5],
+  ["Mumbai", 80001],
+  ["Optimism", 10],
+  ["Palm", 11297108109],
+  ["Polygon", 137],
+];
 
 export const CreateTier: React.FC<Props> = ({ integrationId }) => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [type, setType] = useState("paid");
   const [visibility, setVisibility] = useState("");
-  const [lockAddress, setLockAddress] = useState("");
+  const [monthlyLockAddress, setMonthlyLockAddress] = useState("");
+  const [yearlyLockAddress, setYearlyLockAddress] = useState("");
+  const [network, setNetwork] = useState(0);
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [monthlyPrice, setMonthlyPrice] = useState(0);
@@ -28,6 +48,32 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
     message: `${user?.name + ":" + user?.id}`,
   });
 
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        if ((monthlyLockAddress || yearlyLockAddress) && network) {
+          const unlockProvider = `https://rpc.unlock-protocol.com/${network}`;
+          const provider = new ethers.providers.JsonRpcProvider(unlockProvider);
+          const monthlyLock = new ethers.Contract(monthlyLockAddress, publicLockABI, provider);
+          const _monthlyPrice = await monthlyLock.keyPrice();
+          console.log("MONTHLY_PRICE", _monthlyPrice.toNumber());
+          setMonthlyPrice(_monthlyPrice.toNumber());
+          if (yearlyLockAddress) {
+            const yearlyLock = new ethers.Contract(yearlyLockAddress, publicLockABI, provider);
+            const _yearlyPrice = await yearlyLock.keyPrice();
+            console.log("YEARLY_PRICE", _yearlyPrice.toNumber());
+            setYearlyPrice(_yearlyPrice.toNumber());
+          }
+        } else {
+          console.log("FETCHING PRICE...");
+        }
+      } catch (e) {
+        console.log("ERR_FETCHING_PRICE", e);
+      }
+    };
+    fetchPriceData();
+  }, [monthlyLockAddress, yearlyLockAddress, network]);
+
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
@@ -38,7 +84,9 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
         signature,
         message: `${user?.name + ":" + user?.id}`,
         name,
-        lockAddress,
+        monthlyLockAddress,
+        yearlyLockAddress,
+        network,
         description,
         type,
         visibility,
@@ -69,14 +117,46 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
           <InputBase error={!name} placeholder="Tier name" value={name} onChange={setName} />
         </div>
         <div className="my-4">
-          <AddressInput placeholder="Tier lock address" value={lockAddress} onChange={setLockAddress} />
+          <AddressInput
+            placeholder="Monthly plan lock address"
+            value={monthlyLockAddress}
+            onChange={setMonthlyLockAddress}
+          />
         </div>
+        <div className="my-4">
+          <AddressInput
+            placeholder="Yearly plan lock address"
+            value={yearlyLockAddress}
+            onChange={setYearlyLockAddress}
+          />
+        </div>
+
+        <div className="my-4">
+          <select
+            name="Network"
+            value={network}
+            onChange={e => {
+              const val = e.target.value;
+              setNetwork(parseInt(val));
+            }}
+            className="select select-bordered select-ghost input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+          >
+            {NETWORKS &&
+              NETWORKS.map(([_network, _networkId], _index) => (
+                <option key={_index} value={_networkId}>
+                  {_network}
+                </option>
+              ))}
+          </select>
+        </div>
+
         <div className="my-4">
           <InputBase placeholder="Description..." value={description} onChange={setDescription} />
         </div>
         <div className="my-4">
           <select
             name="type"
+            value={type}
             onChange={e => {
               const val = e.target.value;
               setType(val);
@@ -89,47 +169,44 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
         <div className="my-4">
           <select
             name="visibility"
+            value={visibility}
             onChange={e => {
               const val = e.target.value;
               setVisibility(val);
             }}
             className="select select-bordered select-ghost input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
           >
-            <option disabled selected>
-              Choose visibility
-            </option>
+            {/* <option disabled selected> */}
+            <option>Choose visibility</option>
             <option value={"public"}>Public</option>
             <option value={"private"}>Private</option>
           </select>
         </div>
+
         <div className="my-4">
-          <input
-            className="input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-            placeholder={"Monthly price"}
-            name={"monthly-price"}
-            type="number"
-            value={monthlyPrice}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const val = e.target.value;
-              setMonthlyPrice(parseInt(val));
-            }}
-            autoComplete="off"
-          />
+          {!monthlyLockAddress || !network ? (
+            <div className="flex items-center input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400">
+              Monthly price
+            </div>
+          ) : (
+            <div className="flex items-center input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400">
+              {monthlyPrice} /month
+            </div>
+          )}
         </div>
+
         <div className="my-4">
-          <input
-            className="input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-            placeholder={"Yearly price"}
-            name={"yearly-price"}
-            type="number"
-            value={yearlyPrice}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const val = e.target.value;
-              setYearlyPrice(parseInt(val));
-            }}
-            autoComplete="off"
-          />
+          {!yearlyLockAddress || !network ? (
+            <div className="flex items-center input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400">
+              Yearly price
+            </div>
+          ) : (
+            <div className="flex items-center input input-bordered input-ghost focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400">
+              {yearlyPrice} /year
+            </div>
+          )}
         </div>
+
         <div className="my-4">
           <InputBase placeholder="Currency eg USD, EUR..." value={currency} onChange={setCurrency} />
         </div>

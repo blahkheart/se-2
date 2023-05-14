@@ -15,22 +15,3 @@ async function dbConnect() {
 }
 
 export default dbConnect;
-
-/**
-  import {MongoClient} from 'mongodb'
-  const URI = process.env,MDB_URI
-  const options ={
-    if(!MDB_URI)throw new Error('Add mongo db uri to .env)
-    let cllient = new MongoClient(URI,options)
-    let clientPromise
-    if(process.env.NODE_ENV !== 'production'){
-      if(!global._mongoClientPromise){
-      global._mongoClientPromise = client.connect()
-      }
-      clientPromise = global._mongoclientPromise
-    }else {
-      clientPromise = client.connect()
-    }
-  }
-  export default clientPromise
- */
