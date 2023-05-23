@@ -10,6 +10,7 @@ import { abi as publicLockABI } from "~~/abi/publicLock";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
 import { notification } from "~~/utils/scaffold-eth";
 
+
 interface Props {
   integrationId: string;
 }
@@ -48,22 +49,46 @@ export const CreateTier: React.FC<Props> = ({ integrationId }) => {
     message: `${user?.name + ":" + user?.id}`,
   });
 
+  const getTokenDecimals = async (tokenAddress: string, provider: any) => {
+    const tokenContract = new ethers.Contract(tokenAddress, ["function decimals() view returns (uint8)"], provider);
+    const decimals = await tokenContract.decimals();
+    return decimals;
+  };
+
+  function formatStablecoinAmount(amount: any, decimals: any) {
+    const formattedAmount = ethers.utils.formatUnits(amount, decimals);
+    return parseInt(formattedAmount);
+  }
+
+  const fetchLockDetails = async (lockAddress: string, setPriceCallback: (x: number) => void) => {
+    try {
+      const unlockProvider = `https://rpc.unlock-protocol.com/${network}`;
+      const provider = new ethers.providers.JsonRpcProvider(unlockProvider);
+
+      const lock = new ethers.Contract(lockAddress, publicLockABI, provider);
+      const tokenAddress = await lock.tokenAddress();
+      const keyPrice = await lock.keyPrice();
+      if (tokenAddress !== ethers.constants.AddressZero) {
+        const tokenDecimals = getTokenDecimals(tokenAddress, provider);
+        const price = formatStablecoinAmount(keyPrice, await tokenDecimals);
+        console.log(`PRICE (${lockAddress}): ${price}`);
+        setPriceCallback(price);
+      } else {
+        const _price = ethers.utils.formatEther(await keyPrice);
+        console.log("KEY_PRICE", parseFloat(_price));
+        setPriceCallback(parseFloat(_price));
+      }
+    } catch (e) {
+      console.log(`ERR_FETCHING_LOCK_DETAILS (${lockAddress}):`, e);
+    }
+  };
+
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
         if ((monthlyLockAddress || yearlyLockAddress) && network) {
-          const unlockProvider = `https://rpc.unlock-protocol.com/${network}`;
-          const provider = new ethers.providers.JsonRpcProvider(unlockProvider);
-          const monthlyLock = new ethers.Contract(monthlyLockAddress, publicLockABI, provider);
-          const _monthlyPrice = await monthlyLock.keyPrice();
-          console.log("MONTHLY_PRICE", _monthlyPrice.toNumber());
-          setMonthlyPrice(_monthlyPrice.toNumber());
-          if (yearlyLockAddress) {
-            const yearlyLock = new ethers.Contract(yearlyLockAddress, publicLockABI, provider);
-            const _yearlyPrice = await yearlyLock.keyPrice();
-            console.log("YEARLY_PRICE", _yearlyPrice.toNumber());
-            setYearlyPrice(_yearlyPrice.toNumber());
-          }
+          fetchLockDetails(monthlyLockAddress, setMonthlyPrice);
+          if (yearlyLockAddress) fetchLockDetails(yearlyLockAddress, setYearlyPrice);
         } else {
           console.log("FETCHING PRICE...");
         }

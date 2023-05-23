@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { InputBase } from "../scaffold-eth";
+import crypto from "crypto";
 import { useSession } from "next-auth/react";
 import { useSignMessage } from "wagmi";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
@@ -7,6 +8,7 @@ import { IntegrationModalValue } from "~~/types/integrationModalValues";
 import { TierModalValues } from "~~/types/tierModalValues";
 import { notification } from "~~/utils/scaffold-eth";
 import { encryptData as encryptApiKey } from "~~/utils/scaffold-eth";
+
 
 interface Props {
   id: string;
@@ -18,6 +20,7 @@ const defaultIntegrationModalValues = {
   name: "",
   description: "",
   apiKey: "",
+  apiKeyInternal: "",
   siteUrl: "",
 };
 
@@ -27,6 +30,7 @@ const defaultTierModalValues = {
   visibility: "",
   yearlyPrice: 0,
 };
+
 export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
   const [integrationModalValues, setIntegrationModalValues] =
     useState<IntegrationModalValue>(defaultIntegrationModalValues);
@@ -38,6 +42,7 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
   const { signMessageAsync } = useSignMessage({
     message: `${user?.name + ":" + user?.id}`,
   });
+  const envSecret = process.env.NEXT_PUBLIC_SECRET;
 
   const clearInputsAndCloseModal = () => {
     setIntegrationModalValues(defaultIntegrationModalValues);
@@ -45,6 +50,7 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
     closeModalBtn?.click();
   };
 
+  // Add "click" event listener to modal close button once component is loaded
   useEffect(() => {
     try {
       const _closeModalBtn = document.querySelector<HTMLLabelElement>(".edit-modal-close");
@@ -71,9 +77,8 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
 
   const handleEditTier = async (id: string) => {
     try {
-      console.log("id", id);
-      console.log("userId", userId);
-      console.log("rpuyr", tierModalValues);
+      console.log(id);
+      console.log(userId);
       clearInputsAndCloseModal();
     } catch (error) {
       console.error("Failed to edit tier");
@@ -82,8 +87,24 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
 
   const handleEditIntegration = async (id: string) => {
     try {
+      // sign message to create encryption key
       const encryptionKey = await signMessageAsync();
+      // use encrytionKey to encrypt api key
       const _encryptedApiKey = encryptApiKey(integrationModalValues.apiKey, encryptionKey);
+      // declare variable for saving encrypted internal apiKey
+      let _encryptedApiKeyInternal = "";
+      // declare variable for saving user secret generated
+      let _userSecret = "";
+
+      if (!envSecret) return notification.error(`Error fetching secret`);
+      _userSecret = crypto.randomBytes(32).toString("hex");
+      // internal encrytionKey to encrypt internal apiKey
+      const internalEncryptionKey = `${_userSecret}:${envSecret}`;
+      console.log("test::", internalEncryptionKey);
+      if (integrationModalValues.apiKey)
+        _encryptedApiKeyInternal = encryptApiKey(integrationModalValues.apiKey, internalEncryptionKey);
+      console.log("test::internalEncryptionKey", _encryptedApiKeyInternal);
+
       const result = await fetch("/api/integration/edit", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -91,7 +112,9 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
           id,
           description: integrationModalValues.description,
           siteUrl: integrationModalValues.siteUrl,
+          secret: _userSecret,
           apiKey: _encryptedApiKey,
+          apiKeyInternal: _encryptedApiKeyInternal,
           name: integrationModalValues.name,
         }),
       });
@@ -141,7 +164,6 @@ export const EditModal: React.FC<Props> = ({ id, userId, type }) => {
             <button
               onClick={() => {
                 handleEditIntegration(id);
-                // signMessageAsync();
               }}
               className="btn border-transparent hover:border-transparent px-8 mr-4 text-white bg-green-600 hover:bg-green-700"
             >

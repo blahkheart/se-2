@@ -3,6 +3,7 @@ import Integration from "@lib/models/integration";
 import { NextApiRequest, NextApiResponse } from "next";
 import { IntegrationUpdateData } from "~~/types/integrationUpdateData";
 
+
 // Todos
 // use session to protect api route
 
@@ -11,14 +12,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).json({ message: "Method not allowed." });
     return;
   }
+
   try {
     // Connect to the database
     await dbConnect();
     // get Id and data from request
-    const { id, name, apiKey, siteUrl, description } = req.body;
+    const { id, name, apiKey, apiKeyInternal, secret, siteUrl, description } = req.body;
     const update: IntegrationUpdateData = {
       name: name || undefined,
       apiKey: apiKey || undefined,
+      apiKeyInternal: apiKeyInternal || undefined,
+      secret: secret || undefined,
       siteUrl: siteUrl || undefined,
       description: description || undefined,
     };

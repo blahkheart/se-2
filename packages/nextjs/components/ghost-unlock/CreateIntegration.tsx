@@ -21,19 +21,20 @@ export const CreateIntegration: React.FC = () => {
   const { signMessageAsync } = useSignMessage({
     message: `${user?.name + ":" + user?.id}`,
   });
-  const _userSecret = crypto.randomBytes(32).toString("hex");
   const envSecret = process.env.SECRET;
-  const internalEncryptionKey = `${_userSecret}:${envSecret}`;
-  const _encryptedApiKeyInternal = encryptApiKey(apiKey, internalEncryptionKey);
   const router = useRouter();
 
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      // create integration in DB
       const encryptionKey = await signMessageAsync();
       const _encryptedApiKey = encryptApiKey(apiKey, encryptionKey);
 
+      const _userSecret = crypto.randomBytes(32).toString("hex");
+      const internalEncryptionKey = `${_userSecret}:${envSecret}`;
+      const _encryptedApiKeyInternal = encryptApiKey(apiKey, internalEncryptionKey);
+
+      // create integration in DB
       const response = await axios.post<IntegrationDocument>("/api/integration/create", {
         name,
         description,

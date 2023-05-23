@@ -5,8 +5,8 @@ export interface SubscriberDocument extends mongoose.Document {
   email: string;
   address: string;
   tier: mongoose.Schema.Types.ObjectId;
-  startDate: Date;
-  endDate: Date;
+  startDate: number;
+  endDate: number;
   isActive: boolean;
 }
 
@@ -32,8 +32,8 @@ const subscriberSchema = new mongoose.Schema<SubscriberDocument>(
       ref: "Tier",
       required: true,
     },
-    startDate: { type: Date, default: Date.now },
-    endDate: { type: Date },
+    startDate: { type: Number, default: Date.now },
+    endDate: { type: Number },
     isActive: { type: Boolean, default: true },
   },
   {

@@ -73,9 +73,9 @@ Once you have your ghost publication setup:
   * Deploy two lock smart contracts using [Unlock Protocol](https://app.unlock-protocol.com/locks) (one for your monthly plan and another your yearly plan)
   * Fill the `Create a tier` form and submit. If successful, you will have the tier created on your ghost publication.
 
-**Hint**: We recommend using a 3-letter `Currency` when creating a tier for compatibiliy with the ghost api i.e `USD, EUR, BTC, ETH` etc. 
+**Hint**: We recommend using a 3-letter ISO currency code when creating a tier for compatibiliy with the ghost api i.e `USD, EUR, BTC, ETH` etc. 
 
-**Hint**: Locks used for tier monthly and yearly plans must have non-zero (0) price for compatibiliy with the ghost api i.e `keyPrice > 0`.
+**Hint**: Locks used for tier monthly and yearly plans must have integer prices for compatibiliy with the ghost api i.e `keyPrice > 0`.
 
 ## Deploying your NextJS App
 
