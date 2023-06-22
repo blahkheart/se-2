@@ -9,22 +9,6 @@ import Integration from "~~/lib/models/integration";
 import authOptions from "~~/pages/api/auth/auth-options";
 import { decryptData } from "~~/utils/scaffold-eth";
 
-type TierData = {
-  id: string;
-  name: string;
-  monthlyLockAddress: string;
-  yearlyLockAddress: string;
-  network: number;
-  description?: string;
-  type?: "paid";
-  visibility?: "public" | "private";
-  monthlyPrice?: number;
-  yearlyPrice?: number | undefined;
-  welcomePageUrl?: string | undefined;
-  currency?: string;
-  createdBy: string;
-  integrationId: string;
-};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -57,12 +41,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // verify user
     const integration = await Integration.findOne({ _id: integrationId });
-    const integrationCreator = integration.createdBy.toString();
-    const ghostBlogBaseUrl = integration.siteUrl;
-    const encryptedApiKey = integration.apiKey;
+    const { createdBy: integrationCreator, siteUrl: ghostBlogBaseUrl, apiKey: encryptedApiKey } = integration;
     const userAddress = session?.user.name; //user from session
     const decodedAddress = ethers.utils.verifyMessage(message, signature);
-    if (userAddress !== decodedAddress || createdBy !== integrationCreator) {
+    if (userAddress !== decodedAddress || createdBy !== integrationCreator.toString()) {
       return res.status(401).json({ message: "User Authorization Failed" });
     }
 
@@ -72,11 +54,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: "Error decrypting API key" });
     }
 
-    // generate token
     const [id, secret] = decryptedApiKey.split(":");
     if (!id || !secret) {
       return res.status(400).json({ message: "Invalid API key" });
     }
+
+    const newTier = new Tier({
+      id: "0x0",
+      name,
+      monthlyLockAddress,
+      yearlyLockAddress,
+      network,
+      description,
+      type,
+      visibility,
+      yearlyPrice,
+      monthlyPrice,
+      welcomePageUrl,
+      currency,
+      createdBy,
+      integrationId,
+    });
+    // Save new tier to database
+    await newTier.save();
+
+    // generate token
     const token = jwt.sign({}, Buffer.from(secret, "hex"), {
       keyid: id,
       algorithm: "HS256",
@@ -106,39 +108,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     const response = await axios.post(ghostApiUrl, payload, { headers });
-    if (response && response.status === 201) {
-      // Save new tier to database
+    if (response.status === 201) {
       const tierId = response.data.tiers[0].id;
-      const tierData: TierData = {
-        id: tierId,
-        name,
-        monthlyLockAddress,
-        yearlyLockAddress,
-        network,
-        description,
-        type,
-        visibility,
-        yearlyPrice,
-        monthlyPrice,
-        welcomePageUrl,
-        currency,
-        createdBy,
-        integrationId,
-      };
-      const newTier = new Tier(tierData);
-      await newTier.save();
+      // Update the `id` field
+      await Tier.updateOne({ _id: newTier._id }, { id: tierId });
       return res.status(201).json({ message: "Tier created successfully.", data: newTier });
     } else {
+      // Delete the previously created entry in your API database
+      await newTier.remove();
       return res.status(400).send({
         title: "Bad request",
-        msg: "error creating tier",
+        msg: "Error creating tier",
       });
     }
-
-    // Add the new tier to the user's list of tiers
-    // createdBy.tiers.push(newTier._id);
-    // await createdBy.save();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Internal server error." });
   }

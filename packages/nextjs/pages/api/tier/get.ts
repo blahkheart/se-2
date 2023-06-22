@@ -3,6 +3,7 @@ import Tier, { TierDocument } from "@lib/models/tier";
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "~~/lib/dbConnect";
 
+
 export default withNextCors(async (req: NextApiRequest, res: NextApiResponse<TierDocument | { message: string }>) => {
   if (req.method !== "GET") {
     res.status(405).json({ message: "Method not allowed." });

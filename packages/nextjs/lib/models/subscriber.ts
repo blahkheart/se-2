@@ -4,10 +4,12 @@ export interface SubscriberDocument extends mongoose.Document {
   id: string;
   email: string;
   address: string;
-  tier: mongoose.Schema.Types.ObjectId;
+  tiers: {
+    tier: mongoose.Types.ObjectId;
+    isActive: boolean;
+  }[];
   startDate: number;
   endDate: number;
-  isActive: boolean;
 }
 
 const subscriberSchema = new mongoose.Schema<SubscriberDocument>(
@@ -27,14 +29,21 @@ const subscriberSchema = new mongoose.Schema<SubscriberDocument>(
       required: true,
       unique: true,
     },
-    tier: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tier",
-      required: true,
-    },
+    tiers: [
+      {
+        tier: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tier",
+          required: true,
+        },
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+      },
+    ],
     startDate: { type: Number, default: Date.now },
     endDate: { type: Number },
-    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,

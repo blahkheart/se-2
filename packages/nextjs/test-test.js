@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const CryptoJS = require("crypto-js");
 
-
 const decryptData = (data, decrytKey) => {
   try {
     const _decryptedData = CryptoJS.AES.decrypt(data, decrytKey);
@@ -32,7 +31,7 @@ const decryptKey = decryptData(
   "U2FsdGVkX1/Y2SIkYQJLIsp0FiwWD6Ol+FDcAGAvdHRoVO1Pfln0eroIkV24iGwv",
   "a1d4ac058dbf5233c106c537fa9a483c8c018f9690f7b2af56dd57053a382e9b:c7ef32fed504513619f55ec6b07aaf56afd5928f34a38d70d7ff81583b8b1523",
 );
-      const _userSecret = crypto.randomBytes(32).toString("hex");
+const _userSecret = crypto.randomBytes(32).toString("hex");
 
 console.log("DECRYPT_KEY::", decryptKey);
 console.log("_userSecret", _userSecret);
