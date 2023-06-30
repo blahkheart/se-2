@@ -25,7 +25,6 @@ export default withNextCors(async (req: NextApiRequest, res: NextApiResponse) =>
     // Get data from request
     const { hash, email, lockAddress } = req.body;
     const dbQuery = { $or: [{ monthlyLockAddress: lockAddress }, { yearlyLockAddress: lockAddress }] };
-    console.log("EMAIL::", email);
 
     // Find the tier for this lockAddress
     const { id, name, network, integrationId } = await Tier.findOne(dbQuery);
@@ -67,8 +66,6 @@ export default withNextCors(async (req: NextApiRequest, res: NextApiResponse) =>
     }
 
     let subscriber = await Subscriber.findOne({ $and: [{ email }, { address: subscriberAddress }] });
-    const existingTier = subscriber.tiers.find((tier: any) => tier.tier.toString() === tierId);
-    if (subscriber && existingTier.isActive) return res.status(200).json({ message: "Already subscribed" });
     if (!subscriber) {
       subscriber = await new Subscriber({
         id: "0x0",
@@ -80,6 +77,8 @@ export default withNextCors(async (req: NextApiRequest, res: NextApiResponse) =>
       });
       await subscriber.save();
     }
+    const existingTier = subscriber.tiers.find((tier: any) => tier.tier.toString() === tierId);
+    if (subscriber && existingTier.isActive) return res.status(200).json({ message: "Already subscribed" });
 
     // Generate Ghost admin API token
     const token = jwt.sign({}, Buffer.from(apiKeySecret, "hex"), {
