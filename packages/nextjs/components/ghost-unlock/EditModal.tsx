@@ -9,7 +9,6 @@ import { TierModalValues } from "~~/types/tierModalValues";
 import { notification } from "~~/utils/scaffold-eth";
 import { encryptData as encryptApiKey } from "~~/utils/scaffold-eth";
 
-
 interface Props {
   id: string;
   userId: string;

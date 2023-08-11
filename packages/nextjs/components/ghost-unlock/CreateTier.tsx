@@ -10,7 +10,6 @@ import { abi as publicLockABI } from "~~/abi/publicLock";
 import { DefaultUserMod } from "~~/interfaces/defaultUserModifier";
 import { notification } from "~~/utils/scaffold-eth";
 
-
 interface Props {
   integrationId: string;
 }

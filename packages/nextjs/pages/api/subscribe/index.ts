@@ -42,7 +42,9 @@ export default withNextCors(async (req: NextApiRequest, res: NextApiResponse) =>
     const decryptKey = `${secret}:${envSecret}`;
     const decryptedApiKey = decryptData(apiKeyInternal, decryptKey);
     if (!decryptedApiKey) {
-      return res.status(400).json({ message: "Error decrypting API key" });
+      return res
+        .status(400)
+        .json({ message: "Error decrypting API key", secret, envSecret, apiKeyInternal, decryptKey });
     }
 
     const unlockProvider = `https://rpc.unlock-protocol.com/${network}`;
@@ -78,7 +80,7 @@ export default withNextCors(async (req: NextApiRequest, res: NextApiResponse) =>
       await subscriber.save();
     }
     const existingTier = subscriber.tiers.find((tier: any) => tier.tier.toString() === tierId);
-    if (subscriber && existingTier.isActive) return res.status(200).json({ message: "Already subscribed" });
+    if (subscriber && existingTier?.isActive) return res.status(200).json({ message: "Already subscribed" });
 
     // Generate Ghost admin API token
     const token = jwt.sign({}, Buffer.from(apiKeySecret, "hex"), {
